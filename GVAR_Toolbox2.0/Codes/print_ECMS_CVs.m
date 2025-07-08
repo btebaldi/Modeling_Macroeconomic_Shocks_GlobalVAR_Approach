@@ -1,0 +1,108 @@
+function print_ECMS_CVs(cnum,cnames,endoglist,exoglist,cnames_long,rank,alpha,beta_norm,estcase,gvnames,outdir)
+
+%**************************************************************************
+% PURPOSE: printing cointegrating vectors
+%--------------------------------------------------------------------------
+% Alessandro Galesi, July 2011
+% Centro de Estudios Monetarios y Financieros, Madrid.
+% alessandro.galesi@cemfi.edu.es
+%**************************************************************************     
+   
+fcells = 20;
+
+tab = ['VECMX* Estimation: Cointegrating Vectors' num2cell(NaN(1,fcells-1))];
+tab = [tab; num2cell(NaN(1,fcells))];
+
+
+endnum = zeros(1,cnum);
+fornum = zeros(1,cnum);
+for n=1:cnum
+    endnum(n) = length(endoglist.(cnames{n}));
+    fornum(n) = length(exoglist.(cnames{n}));
+end
+
+for n=1:cnum
+    
+    tab = [tab; cnames_long(n) num2cell(NaN(1,fcells-1))]; %#ok
+    tab = [tab; '***********' num2cell(NaN(1,fcells-1))]; %#ok
+    tab = [tab; num2cell(NaN(1,fcells))]; %#ok
+    
+    if not(rank.(cnames{n})==0)
+    
+
+     
+
+    
+    halab = 'ALPHA'; 
+    for j=1:rank.(cnames{n})
+        tmp = sprintf('a%d',j);
+        tmp = {tmp};
+        halab = [halab tmp]; %#ok  
+    end
+    
+    tab = [tab; halab num2cell(NaN(1,fcells-length(halab)))]; %#ok
+    
+    for i=1:endnum(n)
+        tab = [tab; endoglist.(cnames{n})(i) num2cell(alpha.(cnames{n})(i,:)) ...
+            num2cell(NaN(1,fcells-length(endoglist.(cnames{n})(i))- length(alpha.(cnames{n})(i,:))))]; %#ok
+    end  
+    
+    tab = [tab; num2cell(NaN(1,fcells))]; %#ok
+    
+
+
+    hblab = 'BETA'; 
+    for j=1:rank.(cnames{n})
+        tmp = sprintf('CV%d',j);
+        tmp = {tmp};
+        hblab = [hblab tmp]; %#ok
+    end
+    
+    tab = [tab; hblab num2cell(NaN(1,fcells-length(hblab)))]; %#ok
+    
+    btab = beta_norm.(cnames{n});
+    
+    blab = [];
+    % endogenous part of coint vec
+    for i=1:endnum(n)
+        blab = [blab; endoglist.(cnames{n})(i)]; %#ok
+    end
+
+    % w-exogenous part of coint vec
+    for i=1:fornum(n)
+        flag = 0;
+        if not(isempty(gvnames))
+            for g=1:length(gvnames)
+                if strcmp(exoglist.(cnames{n}){i},gvnames{g})
+                    flag =1;
+                end
+            end
+        end
+        if flag == 0
+            coint_tmp = sprintf('%ss',exoglist.(cnames{n}){i});
+        else
+            coint_tmp = sprintf('%s',exoglist.(cnames{n}){i});
+        end
+        cointwe = {coint_tmp};
+        blab = [blab; cointwe]; %#ok
+    end    
+    
+    if estcase.(cnames{n}) == 4
+        blab = ['Trend'; blab]; %#ok
+    elseif estcase.(cnames{n}) == 2
+        blab = ['Intercept'; blab]; %#ok
+    end
+    
+    for i=1:length(beta_norm.(cnames{n}))    
+        tab = [tab; blab(i) num2cell(btab(i,:)) num2cell(NaN(1,fcells-length(blab(i))-length(btab(i,:))))]; %#ok
+    end
+    tab = [tab; num2cell(NaN(1,fcells))]; %#ok
+    
+    else
+        zerorank = {'Zero rank'};
+        tab = [tab; zerorank num2cell(NaN(1,fcells-1))]; %#ok
+        
+    end     
+end
+
+xlswrite([outdir 'output.xlsx'],tab,'ECMS_CVs');

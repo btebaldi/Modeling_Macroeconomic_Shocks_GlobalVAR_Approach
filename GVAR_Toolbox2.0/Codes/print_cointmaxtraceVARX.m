@@ -1,0 +1,62 @@
+function print_cointmaxtraceVARX(cnum,cnames,cnames_long,endoglist,exoglist,maxeig,trace,trace_critvals,outdir)
+
+%**************************************************************************
+% PURPOSE: printing Trace and Maximum Eigenvalue statistics for
+% cointegration tests.
+%--------------------------------------------------------------------------
+% Alessandro Galesi, July 2011
+% Centro de Estudios Monetarios y Financieros, Madrid.
+% alessandro.galesi@cemfi.edu.es
+%**************************************************************************     
+     
+
+endnum = zeros(1,cnum);
+fornum = zeros(1,cnum);
+for n=1:cnum
+    endnum(n) = length(endoglist.(cnames{n}));
+    fornum(n) = length(exoglist.(cnames{n}));
+end
+
+maxendnum = max(endnum);
+vlabel = [];
+for i=1:maxendnum
+    vlab_tmp = sprintf('r=%d',i-1);
+    vlab = {vlab_tmp};
+    vlabel = [vlabel; vlab]; %#ok
+end
+
+tab_maxeig = NaN(maxendnum, cnum);
+tab_trace = NaN(maxendnum, cnum);
+tab_tracecrit = NaN(maxendnum, cnum);
+
+for n=1:cnum
+    for i=1:endnum(n)
+        tab_maxeig(i,n) = maxeig.(cnames{n})(i);
+        tab_trace(i,n) = trace.(cnames{n})(i);
+        tab_tracecrit(i,n) = trace_critvals.(cnames{n})(i);
+    end
+end
+
+tab = ['Detailed Cointegration Results for the Maximum Eigenvalue Statistic at the 5% Significance Level' num2cell(NaN(1,cnum))];
+tab = [tab; num2cell(NaN(1,cnum+1))];
+tab = [tab; 'Country' cnames_long'];
+tab = [tab; '# endogenous variables' num2cell(endnum); '# foreign (star) variables' num2cell(fornum)];
+tab = [tab; vlabel num2cell(tab_maxeig)];
+tab = [tab; num2cell(NaN(5,cnum+1))];
+
+tab = [tab; 'Detailed Cointegration Results for the Trace Statistic at the 5% Significance Level' num2cell(NaN(1,cnum))];  
+tab = [tab; num2cell(NaN(1,cnum+1))];
+tab = [tab; 'Country' cnames_long'];
+tab = [tab; '# endogenous variables' num2cell(endnum); '# foreign (star) variables' num2cell(fornum)];
+tab = [tab; vlabel num2cell(tab_trace)];    
+tab = [tab; num2cell(NaN(5,cnum+1))];
+
+tab = [tab; 'Critical Values for Trace Statistic at the 5% Significance Level (MacKinnon, Haug, Michelis, 1999)' num2cell(NaN(1,cnum))];  
+tab = [tab; num2cell(NaN(1,cnum+1))];
+tab = [tab; 'Country' cnames_long'];
+tab = [tab; '# endogenous variables' num2cell(endnum); '# foreign (star) variables' num2cell(fornum)];
+tab = [tab; vlabel num2cell(tab_tracecrit)];    
+
+xlswrite([outdir 'output.xlsx'],tab,'coint_max&traceVARX');
+
+

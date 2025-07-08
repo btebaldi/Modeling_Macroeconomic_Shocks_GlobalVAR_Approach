@@ -1,0 +1,77 @@
+function print_DUmodel_VECM_stats(gxvnum,gxvnames,aic_sbc_du,F_serialcorr_du,lp_du,rank_du,maxeig_du,trace_du,...
+                             trace_critvals_du,outdir)
+
+
+%**************************************************************************
+% PURPOSE: printing basic statistics of dominant unit model (VECM)
+%--------------------------------------------------------------------------
+% Alessandro Galesi, 2014. CEMFI, Madrid. galesi@cemfi.edu.es
+%**************************************************************************    
+
+
+
+tab = ['Dominant unit model: VAR order selection and cointegration results ' num2cell(NaN(1,6+gxvnum))];
+tab = [tab; num2cell(NaN(1,7+gxvnum))];
+if not(isempty(aic_sbc_du))
+    tab = [tab;'Choice Criteria for Selecting the VAR Order for the Dominant Unit Together With Corresponding Residual Serial Correlation F-Statistics' num2cell(NaN(1,6+gxvnum))];
+    tab = [tab; num2cell(NaN(1,7+gxvnum))];
+    tab = [tab; {'p' 'AIC' 'SBC' 'logLik' ' ' ' ' 'Fcrit_0.05'} gxvnames];
+    
+    for j=1:rows(aic_sbc_du)
+        out_tmp = aic_sbc_du(j,1:4);
+        out1 = [out_tmp(4) out_tmp(2:3) out_tmp(1)]; % reorder results, only esthetical purpose
+        
+        flab_tmp = sprintf('F(%d,%d)', F_serialcorr_du(j,1), F_serialcorr_du(j,2));
+        flab = {flab_tmp};
+        vec = flab; %#ok
+        
+        critfigs = F_serialcorr_du(j,3);
+        dvfigs = F_serialcorr_du(j,4:end);
+        
+        out2 = [critfigs dvfigs];
+        
+        tab = [tab; num2cell(out1) ' ' flab num2cell(out2)]; %#ok
+    end
+    
+    tab = [tab; num2cell(NaN(1,7+gxvnum))];
+end
+tab = [tab; 'Selected Lag Order:' num2cell(lp_du) num2cell(NaN(1,5+gxvnum))];
+
+
+% VECM section
+if gxvnum > 1
+    tab = [tab; num2cell(NaN(1,7+gxvnum))];
+    tab = [tab; '# of Cointegrating Relationships' num2cell(rank_du) num2cell(NaN(1,5+gxvnum))];
+    
+    if not(isempty(trace_du))
+        tab = [tab; num2cell(NaN(2,7+gxvnum))];
+        tab = [tab; 'Detailed Cointegration Results for the Trace and Maximum Eigenvalue Statistic at the 5% Significance Level' num2cell(NaN(1,6+gxvnum))];
+        tab = [tab; num2cell(NaN(1,7+gxvnum))];
+        tab = [tab; '# endogenous variables' num2cell(gxvnum) num2cell(NaN(1,5+gxvnum))];
+        tab = [tab; '# foreign (star) variables' num2cell(0) num2cell(NaN(1,5+gxvnum))];
+        tab = [tab; ' ' 'Maxeig' 'Trace' 'Trace Crit. values at the 5%' num2cell(NaN(1,3+gxvnum))];
+        
+        maxendnum = max(gxvnum);
+        vlabel = [];
+        for i=1:maxendnum
+            vlab_tmp = sprintf('r=%d',i-1);
+            vlab = {vlab_tmp};
+            vlabel = [vlabel; vlab]; %#ok
+        end
+        
+        tab_maxeig = NaN(maxendnum, 1);
+        tab_trace = NaN(maxendnum, 1);
+        tab_tracecrit = NaN(maxendnum, 1);
+        
+        for i=1:gxvnum
+            tab_maxeig(i) = maxeig_du(i);
+            tab_trace(i) = trace_du(i);
+            tab_tracecrit(i) = trace_critvals_du(i);
+        end
+        tab = [tab; vlabel num2cell(tab_maxeig) num2cell(tab_trace) num2cell(tab_tracecrit) num2cell(NaN(gxvnum,3+gxvnum))];
+    end
+end
+
+xlswrite([outdir 'output.xlsx'],tab,'DUmodel_VAR&coint');
+
+

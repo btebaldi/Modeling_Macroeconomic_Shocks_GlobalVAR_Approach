@@ -1,0 +1,56 @@
+function print_cweights(cnames,cnames_long,vnames,gvnames,cweights,outdir)
+
+%**************************************************************************
+% PURPOSE: printing country weights for aggregation
+%--------------------------------------------------------------------------
+% Alessandro Galesi, July 2011
+% Centro de Estudios Monetarios y Financieros, Madrid.
+% alessandro.galesi@cemfi.edu.es
+%**************************************************************************     
+     
+cnum = length(cnames);
+
+title = {'Country Weights'};
+
+vlabel = ['Country'; cnames_long];
+
+hlabel = [vnames gvnames];
+
+table = [];
+
+for j=1:length(vnames)
+    wgt_tmp=[];
+    for n=1:cnum
+        if isfield(cweights.(vnames{j}),cnames{n})
+            wgt_tmp = [wgt_tmp; cweights.(vnames{j}).(cnames{n})]; %#ok
+        else
+            wgt_tmp = [wgt_tmp; NaN]; %#ok
+        end
+    end
+    table = [table wgt_tmp]; %#ok
+
+end
+
+if not(isempty(gvnames))
+    for g=1:length(gvnames)
+        if isfield(cweights,gvnames{g})
+            wgt_tmp = [];
+            for n=1:cnum
+                if isfield(cweights.(gvnames{g}),cnames{n})
+                    wgt_tmp = [wgt_tmp; cweights.(gvnames{g}).(cnames{n})]; %#ok
+                else
+                    wgt_tmp = [wgt_tmp; NaN]; %#ok
+                end
+            end
+            table = [table wgt_tmp]; %#ok
+        end
+    end
+end
+
+tab = [title num2cell(NaN(1,cols(table)))];
+tab = [tab; num2cell(NaN(1,1+cols(table)))];
+tab = [tab; vlabel [hlabel; num2cell(table)]];
+
+xlswrite([outdir 'output.xls'],tab,'cwgts');
+
+

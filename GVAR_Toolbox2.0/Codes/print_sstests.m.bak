@@ -1,0 +1,107 @@
+function print_sstests(kpsup,kpmnsq,ny,rny,qlr,mw,apw,rqlr,rmw,rapw,maxobs,...
+    cnum,cnames,cnames_long,date,maxlag,outdir)
+
+%**************************************************************************
+% PURPOSE: printing structural stability test statistics
+%--------------------------------------------------------------------------
+% Alessandro Galesi, July 2011
+% Centro de Estudios Monetarios y Financieros, Madrid.
+% alessandro.galesi@cemfi.edu.es
+%**************************************************************************     
+     
+
+
+%*****************
+vlist = fieldnames(kpsup);
+
+tab = ['Structural Stability Tests: Statistics' num2cell(NaN(1,length(vlist)))];
+tab = [tab; num2cell(NaN(1,1+length(vlist)))];
+tab = [tab; 'Variables' vlist'];
+tab = [tab; num2cell(NaN(1,1+length(vlist)))];
+
+
+fulltable = [];
+vlabel ={};
+
+sslist = {'kpsup' 'kpmnsq' 'ny' 'rny' 'qlr' 'rqlr' 'mw' 'rmw' 'apw' 'rapw'};
+sslist_long = {'PK sup' 'PK msq' 'Nyblom' 'Robust Nyblom' 'QLR' 'Robust QLR' 'MW' 'Robust MW' 'APW' 'Robust APW'};
+
+empty = [];
+for j=1:length(vlist)
+    empty = [empty NaN]; %#ok
+end
+
+% arrange results in a structure
+out.kpsup = kpsup;
+out.kpmnsq = kpmnsq;
+out.ny = ny;
+out.rny = rny;
+out.qlr = qlr;
+out.rqlr = rqlr;
+out.mw = mw;
+out.rmw = rmw;
+out.apw = apw;
+out.rapw = rapw;
+
+for s=1:length(sslist)
+    
+    vlabel = [vlabel; sslist_long(s); cnames_long]; %#ok
+
+    table = [];
+    
+    for j=1:length(vlist)
+        vtab = [];
+        for n=1:cnum
+            if isfield(out.(sslist{s}).(vlist{j}),cnames{n})
+                vtab = [vtab; out.(sslist{s}).(vlist{j}).(cnames{n})]; %#ok
+            else
+                vtab = [vtab; NaN]; %#ok
+            end
+        end
+        table = [table vtab]; %#ok
+
+    end
+
+    table = [table; empty; empty]; %#ok
+    vlabel = [vlabel; ' ']; %#ok
+
+    fulltable = [fulltable; table]; %#ok
+end
+
+fulltable = fulltable(1:end-1,:); fulltable = [empty; fulltable];
+
+tab = [tab; vlabel num2cell(fulltable)];
+
+xlswrite([outdir 'output.xls'],tab,'str_stab_stats');
+
+
+
+
+% print break dates for QLR tests 
+%************************************
+tab = ['Structural Stability Tests: Break Dates for QLR Tests' num2cell(NaN(1,length(vlist)))];
+tab = [tab; num2cell(NaN(1,1+length(vlist)))];
+tab = [tab; 'Variables' vlist'];
+
+vlabel = cnames_long;
+date_t = date(maxlag+1:end);
+
+table = {};
+vlist = fieldnames(maxobs);
+for j=1:length(vlist)
+    vtab = {};
+    for n=1:cnum
+        if isfield(maxobs.(vlist{j}),cnames{n})
+            vtab = [vtab; date_t(maxobs.(vlist{j}).(cnames{n}))]; %#ok
+        else
+            vtab = [vtab; ' ']; %#ok
+        end
+    end
+    table = [table vtab]; %#ok
+end
+           
+tab = [tab; vlabel table];
+
+xlswrite([outdir 'output.xls'],tab,'str_stab_breakdates');      
+
+

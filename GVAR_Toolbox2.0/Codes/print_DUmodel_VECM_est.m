@@ -1,0 +1,106 @@
+function print_DUmodel_VECM_est(gxvnames,varxlag_du,estcase_du,beta_du,alpha_du,Psi_du,psc_degfrsc_Fcrit_Fsc_du,outdir)
+
+%**************************************************************************
+% PURPOSE: printing coefficient estimates of dominant unit model (VECM)
+%--------------------------------------------------------------------------
+% Alessandro Galesi, 2014. CEMFI, Madrid. galesi@cemfi.edu.es
+%************************************************************************** 
+     
+
+
+endnum = length(gxvnames);
+fcells = 100;
+
+tab = ['VEC Estimates of the Dominant Unit Model' num2cell(NaN(1,fcells-1))];
+tab = [tab; num2cell(NaN(1,fcells))];
+
+if (estcase_du == 4 && not(isempty(alpha_du)) == 1) % there is cointegration
+    detpart = {'Intercept' 'Trend'};
+elseif (estcase_du == 4 && not(isempty(alpha_du)) == 0) % no cointegration, so no trend estimate
+    detpart = {'Intercept'};
+elseif estcase_du == 3 
+    detpart = {'Intercept'};
+elseif (estcase_du == 2 && not(isempty(alpha_du)) == 1) % there is cointegration
+    detpart = {'Intercept'};
+elseif (estcase_du == 2 && not(isempty(alpha_du)) == 0) % no cointegration, so no intercept estimate
+    detpart = {};
+end
+
+% endogenous part of coint vec
+cointlab = [];
+for i=1:endnum
+    coint_tmp = sprintf('%s_1',gxvnames{i});
+    coint1st = {coint_tmp};
+    cointlab = [cointlab coint1st]; %#ok
+end
+
+% differences of endogenous
+dendlab = [];
+if varxlag_du == 1
+else
+    for j=2:varxlag_du
+        jj = j-1;
+        for i=1:endnum
+            dend_tmp = sprintf('d%s_%d',gxvnames{i},jj);
+            dend = {dend_tmp};
+            dendlab = [dendlab dend]; %#ok
+        end
+    end
+end
+
+sizecoint = length(cointlab); %#ok
+
+% Create the vector of variables labels
+%***********************************************
+if not(isempty(alpha_du)) == 1 % there is cointegration
+    hlabel = [' ' detpart cointlab dendlab];
+elseif not(isempty(alpha_du)) == 0 % no cointegration
+    hlabel = [' ' detpart dendlab];
+end
+
+tab = [tab; hlabel num2cell(NaN(1,fcells-length(hlabel)))];
+
+% Create the vector of estimates
+%*********************************
+if not(isempty(alpha_du)) == 1 % there is cointegration
+    cointcoeff = alpha_du*beta_du';
+elseif not(isempty(alpha_du)) == 0 % no cointegration
+    cointcoeff = [];
+end
+
+if varxlag_du == 1
+    if estcase_du == 4 || estcase_du == 3
+        coeffs_out = [Psi_du(:,1) cointcoeff];
+    elseif estcase_du == 2
+        coeffs_out = cointcoeff;
+    end
+else
+    if estcase_du == 4 || estcase_du == 3
+        coeffs_out = [Psi_du(:,1) cointcoeff Psi_du(:,2:end)];
+    elseif estcase_du == 2
+        coeffs_out = [cointcoeff Psi_du];
+    end
+end
+
+for j = 1:endnum
+    
+    endname_tmp = sprintf('d%s',gxvnames{j});
+    endname = {endname_tmp};
+    
+    tab = [tab; endname num2cell(coeffs_out(j,:)) num2cell(NaN(1,fcells-1-length(coeffs_out(j,:))))]; %#ok
+end
+
+tab = [tab; num2cell(NaN(3,fcells))];
+tab = [tab; 'F-Statistics for the Serial Correlation Test of the VECM Residuals' num2cell(NaN(1,fcells-1))];
+tab = [tab; num2cell(NaN(1,fcells))];
+
+flab_tmp = sprintf('F(%d,%d)', psc_degfrsc_Fcrit_Fsc_du(1), psc_degfrsc_Fcrit_Fsc_du(2));
+flab = {flab_tmp};
+vec = flab;
+hlab = [' ' 'Fcrit_0.05' gxvnames];
+critfigs = psc_degfrsc_Fcrit_Fsc_du(3);
+gxvfigs = psc_degfrsc_Fcrit_Fsc_du(4:end);
+
+tab = [tab; hlab num2cell(NaN(1,fcells-cols(hlab))); vec num2cell([critfigs gxvfigs]) num2cell(NaN(1,fcells-1-cols([critfigs gxvfigs])))];
+
+xlswrite([outdir 'output.xlsx'],tab,'DUmodel_VECM_est');

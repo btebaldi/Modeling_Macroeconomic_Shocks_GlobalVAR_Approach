@@ -1,0 +1,31 @@
+function print_avgcorr_vall(cnum,cnames_long,vnames,avgcorr,avgcorr_d,avgcorr_VARXres,outdir)
+
+%**************************************************************************
+% PURPOSE: printing average pairwise cross-section correlations 
+%--------------------------------------------------------------------------
+% Alessandro Galesi, July 2011
+% Centro de Estudios Monetarios y Financieros, Madrid.
+% alessandro.galesi@cemfi.edu.es
+%**************************************************************************     
+
+tab = ['Average Pairwise Cross-Section Correlations: Variables and Residuals' num2cell(NaN(1,4))];
+tab = [tab; num2cell(NaN(1,5))];
+tab = [tab; num2cell(NaN(1,2)) {'Levels' 'First Differences' 'VECMX* Residuals'}];
+
+vlabel1 = [];
+vlabel2 = [];
+table = [];
+for j=1:length(vnames)
+    for n=1:cnum
+        vlabel1 = [vlabel1; vnames(j)]; %#ok
+        vlabel2 = [vlabel2; cnames_long(n)]; %#ok
+    end
+    
+    table = [table; avgcorr.(vnames{j}) avgcorr_d.(vnames{j}) avgcorr_VARXres.(vnames{j})]; %#ok
+end
+
+tab = [tab; vlabel1 vlabel2 num2cell(table)];
+
+xlswrite([outdir 'output.xls'],tab,'avgcorr_vall');
+
+    

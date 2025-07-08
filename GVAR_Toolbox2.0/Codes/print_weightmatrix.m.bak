@@ -1,0 +1,47 @@
+function print_weightmatrix(cnames_long,wmat,yearseq,weightstype_flag,outdir)
+
+%**************************************************************************
+% PURPOSE: prints the weights matrix
+%--------------------------------------------------------------------------
+% Alessandro Galesi, 2014. CEMFI, Madrid. galesi@cemfi.edu.es
+%**************************************************************************   
+     
+
+if strcmp(weightstype_flag,'fixed')
+    
+title1 ={'Weight Matrix (based on fixed weights)'};
+
+hlabel1 = ['Country' cnames_long'];
+vlabel1 = cnames_long;
+
+tab1 = wmat;
+
+
+tab = [title1 num2cell(NaN(1,cols(tab1)))];
+tab = [tab; num2cell(NaN(1,1+cols(tab1)))];
+tab = [tab; hlabel1];
+tab = [tab; vlabel1 num2cell(tab1)];
+
+elseif strcmp(weightstype_flag,'time-varying')
+
+title1 ={'Weight Matrices (based on time-varying weights)'};
+
+hlabel1 = ['Year' 'Country' cnames_long'];
+
+
+tab1 = [];
+vlabel1a = [];
+vlabel1b = [];
+for i=1:length(yearseq)
+    tab1 = [tab1; wmat(:,:,i)]; %#ok
+    vlabel1a = [vlabel1a; yearseq(i)*ones(length(cnames_long),1)]; %#ok
+    vlabel1b = [vlabel1b; cnames_long]; %#ok
+end
+
+tab = [title1 num2cell(NaN(1,1+cols(tab1)))];
+tab = [tab; num2cell(NaN(1,2+cols(tab1)))];
+tab = [tab; hlabel1];
+tab = [tab; num2cell(vlabel1a) vlabel1b num2cell(tab1)];
+end
+
+xlswrite([outdir 'output.xls'],tab,'weightmatrix');

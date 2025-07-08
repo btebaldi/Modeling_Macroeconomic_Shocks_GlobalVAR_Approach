@@ -1,0 +1,384 @@
+function print_unitroottests(vnum,vnames,cnum,cnames,cnames_long,gvnum,gvnames,urt_adf,urt_ws,outdir)
+
+%**************************************************************************
+% PURPOSE: printing unit root test statistics
+%--------------------------------------------------------------------------
+% Alessandro Galesi, July 2011
+% Centro de Estudios Monetarios y Financieros, Madrid.
+% alessandro.galesi@cemfi.edu.es
+%**************************************************************************     
+   
+
+% Domestic Variables
+%**************************************************************************
+tab = ['Unit Root Tests for the Domestic Variables at the 5% Significance Level' num2cell(NaN(1,cnum+2)); num2cell(NaN(1,cnum+3))];
+tab = [tab; 'Domestic Variables' 'Statistic' 'Critical Value' cnames_long'];
+
+for i=1:vnum
+    
+    Levellab_t_tmp = sprintf('%s (with trend)',vnames{i});
+    Levellab_t = {Levellab_t_tmp};
+    
+    k=0;
+    tab1_t=[];
+    ltab1 = [];
+    for n=1:cnum
+        if isfield(urt_adf.(vnames{i}),cnames{n})
+            if k==0
+                ltab1 = [ltab1; urt_adf.(vnames{i}).(cnames{n})(1,1)]; %#ok
+            end
+            k=1;
+            tab1_t = [tab1_t urt_adf.(vnames{i}).(cnames{n})(1,2)]; %#ok
+        else
+            tab1_t = [tab1_t NaN]; %#ok
+        end
+    end
+    
+    tab = [tab; Levellab_t 'ADF' num2cell(ltab1) num2cell(tab1_t)]; %#ok
+    
+    k=0;
+    tab1_t=[];
+    ltab1 = [];
+    for n=1:cnum
+        if isfield(urt_ws.(vnames{i}),cnames{n})
+            if k==0
+                ltab1 = [ltab1; urt_ws.(vnames{i}).(cnames{n})(1,1)]; %#ok
+            end
+            k=1;
+            tab1_t = [tab1_t urt_ws.(vnames{i}).(cnames{n})(1,2)]; %#ok
+        else
+            tab1_t = [tab1_t NaN]; %#ok
+        end
+    end
+    
+    tab = [tab; Levellab_t 'WS' num2cell(ltab1) num2cell(tab1_t)]; %#ok
+    
+    Levellab_nt_tmp = sprintf('%s (no trend)',vnames{i});
+    Levellab_nt = {Levellab_nt_tmp};
+    
+    k=0;
+    tab1_t=[];
+    ltab1 = [];
+    for n=1:cnum
+        if isfield(urt_adf.(vnames{i}),cnames{n})
+            if k==0
+                ltab1 = [ltab1; urt_adf.(vnames{i}).(cnames{n})(2,1)]; %#ok
+            end
+            k=1;
+            tab1_t = [tab1_t urt_adf.(vnames{i}).(cnames{n})(2,2)]; %#ok
+        else
+            tab1_t = [tab1_t NaN]; %#ok
+        end
+    end
+    
+    tab = [tab; Levellab_nt 'ADF' num2cell(ltab1) num2cell(tab1_t)]; %#ok
+    
+    k=0;
+    tab1_t=[];
+    ltab1 = [];
+    for n=1:cnum
+        if isfield(urt_ws.(vnames{i}),cnames{n})
+            if k==0
+                ltab1 = [ltab1; urt_ws.(vnames{i}).(cnames{n})(2,1)]; %#ok
+            end
+            k=1;
+            tab1_t = [tab1_t urt_ws.(vnames{i}).(cnames{n})(2,2)]; %#ok
+        else
+            tab1_t = [tab1_t NaN]; %#ok
+        end
+    end
+    
+    tab = [tab; Levellab_nt 'WS' num2cell(ltab1) num2cell(tab1_t)]; %#ok
+    
+    Idifflab_tmp = sprintf('D%s',vnames{i});
+    Idifflab = {Idifflab_tmp};
+    
+    k=0;
+    tab1_t=[];
+    ltab1 = [];
+    for n=1:cnum
+        if isfield(urt_adf.(vnames{i}),cnames{n})
+            if k==0
+                ltab1 = [ltab1; urt_adf.(vnames{i}).(cnames{n})(3,1)]; %#ok
+            end
+            k=1;
+            tab1_t = [tab1_t urt_adf.(vnames{i}).(cnames{n})(3,2)]; %#ok
+        else
+            tab1_t = [tab1_t NaN]; %#ok
+        end
+    end
+    
+    tab = [tab; Idifflab 'ADF' num2cell(ltab1) num2cell(tab1_t)]; %#ok
+    
+    k=0;
+    tab1_t = [];
+    ltab1 = [];
+    for n=1:cnum
+        if isfield(urt_ws.(vnames{i}),cnames{n})
+            if k==0
+                ltab1 = [ltab1; urt_ws.(vnames{i}).(cnames{n})(3,1)]; %#ok
+            end
+            k=1;
+            tab1_t = [tab1_t urt_ws.(vnames{i}).(cnames{n})(3,2)]; %#ok
+        else
+            tab1_t = [tab1_t NaN]; %#ok
+        end
+    end
+    
+    tab = [tab; Idifflab 'WS' num2cell(ltab1) num2cell(tab1_t)]; %#ok
+    
+    IIdifflab_tmp = sprintf('DD%s',vnames{i});
+    IIdifflab = {IIdifflab_tmp};
+    
+    k=0;
+    tab1_t=[];
+    ltab1 = [];
+    for n=1:cnum
+        if isfield(urt_adf.(vnames{i}),cnames{n})
+            if k==0
+                ltab1 = [ltab1; urt_adf.(vnames{i}).(cnames{n})(4,1)]; %#ok
+            end
+            k=1;
+            tab1_t = [tab1_t urt_adf.(vnames{i}).(cnames{n})(4,2)]; %#ok
+        else
+            tab1_t = [tab1_t NaN]; %#ok
+        end
+    end
+    
+    tab = [tab; IIdifflab 'ADF' num2cell(ltab1) num2cell(tab1_t)]; %#ok
+    
+    
+    k=0;
+    tab1_t =[];
+    ltab1 = [];
+    for n=1:cnum
+        if isfield(urt_ws.(vnames{i}),cnames{n})
+            if k==0
+                ltab1 = [ltab1; urt_ws.(vnames{i}).(cnames{n})(4,1)]; %#ok
+            end
+            k=1;
+            tab1_t = [tab1_t urt_ws.(vnames{i}).(cnames{n})(4,2)]; %#ok
+        else
+            tab1_t = [tab1_t NaN]; %#ok
+        end
+    end
+    
+    tab = [tab; IIdifflab 'WS' num2cell(ltab1) num2cell(tab1_t)]; %#ok
+    
+end
+
+xlswrite([outdir 'output.xls'],tab,'urt_domestic');
+
+
+% Foreign-Specific Variables
+%**************************************************************************
+tab = ['Unit Root Tests for the Foreign Variables at the 5% Significance Level' num2cell(NaN(1,cnum+2)); num2cell(NaN(1,cnum+3))];
+tab = [tab; 'Foreign Variables' 'Statistic' 'Critical Value' cnames_long'];
+
+for i=1:vnum
+    Levellab_tmp = sprintf('%ss',vnames{i});
+    Levellab_t_tmp = sprintf('%ss (with trend)',vnames{i});
+    Levellab_t = {Levellab_t_tmp};
+    
+    k=0;
+    tab1_t=[];
+    ltab1 = [];
+    for n=1:cnum
+        if isfield(urt_adf.(Levellab_tmp),cnames{n})
+            if k==0
+                ltab1 = [ltab1; urt_adf.(Levellab_tmp).(cnames{n})(1,1)]; %#ok
+            end
+            k=1;
+            tab1_t = [tab1_t urt_adf.(Levellab_tmp).(cnames{n})(1,2)]; %#ok
+        else
+            tab1_t = [tab1_t NaN]; %#ok
+        end
+    end
+    
+    tab = [tab; Levellab_t 'ADF' num2cell(ltab1) num2cell(tab1_t)]; %#ok
+    
+    k=0;
+    tab1_t=[];
+    ltab1 = [];
+    for n=1:cnum
+        if isfield(urt_ws.(Levellab_tmp),cnames{n})
+            if k==0
+                ltab1 = [ltab1; urt_ws.(Levellab_tmp).(cnames{n})(1,1)]; %#ok
+            end
+            k=1;
+            tab1_t = [tab1_t urt_ws.(Levellab_tmp).(cnames{n})(1,2)]; %#ok
+        else
+            tab1_t = [tab1_t NaN]; %#ok
+        end
+    end
+    
+    tab = [tab; Levellab_t 'WS' num2cell(ltab1) num2cell(tab1_t)]; %#ok
+    
+    Levellab_nt_tmp = sprintf('%s (no trend)',Levellab_tmp);
+    Levellab_nt = {Levellab_nt_tmp};
+    
+    k=0;
+    tab1_t=[];
+    ltab1 = [];
+    for n=1:cnum
+        if isfield(urt_adf.(Levellab_tmp),cnames{n})
+            if k==0
+                ltab1 = [ltab1; urt_adf.(Levellab_tmp).(cnames{n})(2,1)]; %#ok
+            end
+            k=1;
+            tab1_t = [tab1_t urt_adf.(Levellab_tmp).(cnames{n})(2,2)]; %#ok
+        else
+            tab1_t = [tab1_t NaN]; %#ok
+        end
+    end
+    
+    tab = [tab; Levellab_nt 'ADF' num2cell(ltab1) num2cell(tab1_t)]; %#ok
+    
+    k=0;
+    tab1_t=[];
+    ltab1 = [];
+    for n=1:cnum
+        if isfield(urt_ws.(Levellab_tmp),cnames{n})
+            if k==0
+                ltab1 = [ltab1; urt_ws.(Levellab_tmp).(cnames{n})(2,1)]; %#ok
+            end
+            k=1;
+            tab1_t = [tab1_t urt_ws.(Levellab_tmp).(cnames{n})(2,2)]; %#ok
+        else
+            tab1_t = [tab1_t NaN]; %#ok
+        end
+    end
+    
+    tab = [tab; Levellab_nt 'WS' num2cell(ltab1) num2cell(tab1_t)]; %#ok
+    
+    Idifflab_tmp = sprintf('D%ss',vnames{i});
+    Idifflab = {Idifflab_tmp};
+    
+    k=0;
+    tab1_t=[];
+    ltab1 = [];
+    for n=1:cnum
+        if isfield(urt_adf.(Levellab_tmp),cnames{n})
+            if k==0
+                ltab1 = [ltab1; urt_adf.(Levellab_tmp).(cnames{n})(3,1)]; %#ok
+            end
+            k=1;
+            tab1_t = [tab1_t urt_adf.(Levellab_tmp).(cnames{n})(3,2)]; %#ok
+        else
+            tab1_t = [tab1_t NaN]; %#ok
+        end
+    end
+    
+    tab = [tab; Idifflab 'ADF' num2cell(ltab1) num2cell(tab1_t)]; %#ok
+    
+    k=0;
+    tab1_t = [];
+    ltab1 = [];
+    for n=1:cnum
+        if isfield(urt_ws.(Levellab_tmp),cnames{n})
+            if k==0
+                ltab1 = [ltab1; urt_ws.(Levellab_tmp).(cnames{n})(3,1)]; %#ok
+            end
+            k=1;
+            tab1_t = [tab1_t urt_ws.(Levellab_tmp).(cnames{n})(3,2)]; %#ok
+        else
+            tab1_t = [tab1_t NaN]; %#ok
+        end
+    end
+    
+    tab = [tab; Idifflab 'WS' num2cell(ltab1) num2cell(tab1_t)]; %#ok
+    
+    IIdifflab_tmp = sprintf('DD%ss',vnames{i});
+    IIdifflab = {IIdifflab_tmp};
+    
+    k=0;
+    tab1_t=[];
+    ltab1 = [];
+    for n=1:cnum
+        if isfield(urt_adf.(Levellab_tmp),cnames{n})
+            if k==0
+                ltab1 = [ltab1; urt_adf.(Levellab_tmp).(cnames{n})(4,1)]; %#ok
+            end
+            k=1;
+            tab1_t = [tab1_t urt_adf.(Levellab_tmp).(cnames{n})(4,2)]; %#ok
+        else
+            tab1_t = [tab1_t NaN]; %#ok
+        end
+    end
+    
+    tab = [tab; IIdifflab 'ADF' num2cell(ltab1) num2cell(tab1_t)]; %#ok
+    
+    
+    k=0;
+    tab1_t =[];
+    ltab1 = [];
+    for n=1:cnum
+        if isfield(urt_ws.(Levellab_tmp),cnames{n})
+            if k==0
+                ltab1 = [ltab1; urt_ws.(Levellab_tmp).(cnames{n})(4,1)]; %#ok
+            end
+            k=1;
+            tab1_t = [tab1_t urt_ws.(Levellab_tmp).(cnames{n})(4,2)]; %#ok
+        else
+            tab1_t = [tab1_t NaN]; %#ok
+        end
+    end
+    
+    tab = [tab; IIdifflab 'WS' num2cell(ltab1) num2cell(tab1_t)]; %#ok
+    
+end
+
+xlswrite([outdir 'output.xls'],tab,'urt_foreign');
+
+
+if not(gvnum==0)
+    % Global Variables
+    %***********************************************************************
+    
+    tab = ['Unit Root Tests for the Global Variables at the 5% Significance Level' num2cell(NaN(1,3)); num2cell(NaN(1,4))];
+    tab = [tab; {'Global Variables' 'Test' 'Critical Value' 'Statistic'}];
+    
+    for i=1:gvnum
+        
+        Levellab_t_tmp = sprintf('%s (with trend)',gvnames{i});
+        Levellab_t = {Levellab_t_tmp};
+        
+        ltab1 = urt_adf.(gvnames{i})(1,1);
+        tab1 = urt_adf.(gvnames{i})(1,2);
+        tab = [tab; Levellab_t 'ADF' num2cell(ltab1) num2cell(tab1)]; %#ok
+        ltab1 = urt_ws.(gvnames{i})(1,1);
+        tab1 = urt_ws.(gvnames{i})(1,2);
+        tab = [tab; Levellab_t 'WS' num2cell(ltab1) num2cell(tab1)]; %#ok
+        
+        Levellab_nt_tmp = sprintf('%s (no trend)',gvnames{i});
+        Levellab_nt = {Levellab_nt_tmp};
+        ltab1 = urt_adf.(gvnames{i})(2,1);
+        tab1 = urt_adf.(gvnames{i})(2,2);
+        tab = [tab; Levellab_nt 'ADF' num2cell(ltab1) num2cell(tab1)]; %#ok
+        ltab1 = urt_ws.(gvnames{i})(2,1);
+        tab1 = urt_ws.(gvnames{i})(2,2);
+        tab = [tab; Levellab_nt 'WS' num2cell(ltab1) num2cell(tab1)]; %#ok
+        
+        Idifflab_tmp = sprintf('D%s',gvnames{i});
+        Idifflab = {Idifflab_tmp};
+        ltab1 = urt_adf.(gvnames{i})(3,1);
+        tab1 = urt_adf.(gvnames{i})(3,2);
+        tab = [tab; Idifflab 'ADF' num2cell(ltab1) num2cell(tab1)]; %#ok
+        ltab1 = urt_ws.(gvnames{i})(3,1);
+        tab1 = urt_ws.(gvnames{i})(3,2);
+        tab = [tab; Idifflab 'WS' num2cell(ltab1) num2cell(tab1)]; %#ok
+        
+        IIdifflab_tmp = sprintf('DD%s',gvnames{i});
+        IIdifflab = {IIdifflab_tmp};
+        ltab1 = urt_adf.(gvnames{i})(4,1);
+        tab1 = urt_adf.(gvnames{i})(4,2);
+        tab = [tab; IIdifflab 'ADF' num2cell(ltab1) num2cell(tab1)]; %#ok
+        ltab1 = urt_ws.(gvnames{i})(4,1);
+        tab1 = urt_ws.(gvnames{i})(4,2);
+        tab = [tab; Idifflab 'WS' num2cell(ltab1) num2cell(tab1)]; %#ok
+        
+    end
+    xlswrite([outdir 'output.xls'],tab,'urt_global','A1');
+    
+end
+

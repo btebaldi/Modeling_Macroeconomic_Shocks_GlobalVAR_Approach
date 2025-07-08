@@ -1,0 +1,68 @@
+function print_exogeneity_test(cnum,cnames,cnames_long,varxlag_we,fvnames,gvnames,wetest_stat,exoglist,outdir)
+
+%**************************************************************************
+% PURPOSE: printing weak exogeneity test results
+%--------------------------------------------------------------------------
+% Alessandro Galesi, August 2012
+% Centro de Estudios Monetarios y Financieros, Madrid.
+% alessandro.galesi@cemfi.edu.es
+%**************************************************************************     
+    
+tab_a = ['Order of Weak Exogeneity Regression Equations' num2cell(NaN(1,2))];
+tab_a = [tab_a;  '(p*: lag order of domestic variables, q*: lag order of foreign variables)' num2cell(NaN(1,2))];
+tab_a = [tab_a; num2cell(NaN(1,1)) 'p*' 'q*'];
+
+for n=1:cnum
+     tab_a = [tab_a; cnames_long(n) num2cell(varxlag_we.(cnames{n}))]; %#ok 
+end
+        
+xlswrite([outdir 'output.xls'],tab_a,'exogeneity_test','A1');
+
+exognames = [fvnames gvnames];
+
+tab_b = ['Test for Weak Exogeneity at the 5% Significance Level' num2cell(NaN(1,2+length(exognames)))];
+tab_b = [tab_b; num2cell(NaN(1,3+length(exognames)))];
+
+exognames_s = [];
+for i=1:length(fvnames)
+
+    fvn_s_tmp = sprintf('%ss', fvnames{i});
+    fvn_s = {fvn_s_tmp};
+
+    exognames_s = [exognames_s fvn_s]; %#ok
+end
+
+% add gvnames
+exognames_s = [exognames_s gvnames];
+
+tab_b = [tab_b; {'Country' 'F test' 'Fcrit_0.05'} exognames_s];
+
+
+table = NaN(cnum, length(exognames_s));
+
+for n=1:cnum
+
+    dgf = wetest_stat.(cnames{n})(1:2);
+    fcrit = wetest_stat.(cnames{n})(3);
+
+    dgf_tmp = sprintf('F(%d,%d)',dgf);
+    dgf = {dgf_tmp};
+
+    fstats = wetest_stat.(cnames{n})(4:end);
+
+    for i=1:length(exoglist.(cnames{n}))
+        for j=1:length(exognames_s)
+            if strcmp(exoglist.(cnames{n})(i),exognames(j))
+                table(n,j) = fstats(i);
+            end
+        end
+    end
+    
+    tab_b = [tab_b; cnames_long(n) dgf num2cell(fcrit) num2cell(table(n,:))]; %#ok 
+    
+end
+
+
+xlswrite([outdir 'output.xls'],tab_b,'exogeneity_test','H1');
+
+

@@ -1,0 +1,127 @@
+function print_sstests_cvals(kpsup_90cv,kpmnsq_90cv,ny_90cv,rny_90cv,qlr_90cv,mw_90cv,apw_90cv,rqlr_90cv,rmw_90cv,rapw_90cv,...
+    kpsup_95cv,kpmnsq_95cv,ny_95cv,rny_95cv,qlr_95cv,mw_95cv,apw_95cv,rqlr_95cv,rmw_95cv,rapw_95cv,...
+    kpsup_99cv,kpmnsq_99cv,ny_99cv,rny_99cv,qlr_99cv,mw_99cv,apw_99cv,rqlr_99cv,rmw_99cv,rapw_99cv,...
+    cnum,cnames,cnames_long,outdir)
+
+
+%**************************************************************************
+% PURPOSE: printing structural stability test bootstrapped critical values
+%--------------------------------------------------------------------------
+% Alessandro Galesi, July 2011
+% Centro de Estudios Monetarios y Financieros, Madrid.
+% alessandro.galesi@cemfi.edu.es
+%**************************************************************************
+
+vlist = fieldnames(kpsup_90cv);
+
+%***********************
+
+vlist90 = {}; vlist95 = {}; vlist99 = {};
+for j=1:length(vlist)
+    vlist90_t = sprintf('%s_90%%',vlist{j});
+    vlist90_t = {vlist90_t};
+    vlist90 = [vlist90 vlist90_t]; %#ok
+    vlist95_t = sprintf('%s_95%%',vlist{j});
+    vlist95_t = {vlist95_t};
+    vlist95 = [vlist95 vlist95_t]; %#ok
+    vlist99_t = sprintf('%s_99%%',vlist{j});
+    vlist99_t = {vlist99_t};  
+    vlist99 = [vlist99 vlist99_t]; %#ok
+end
+
+title = {'Structural Stability Tests: Critical Values'};
+
+
+hlabel = ['Critical Values'; vlist90'; vlist95'; vlist99']';
+
+
+fulltabcv = [];
+vlabel ={};
+
+sslist = {'kpsup_90cv' 'kpmnsq_90cv' 'ny_90cv' 'rny_90cv' 'qlr_90cv' 'rqlr_90cv' 'mw_90cv' 'rmw_90cv' 'apw_90cv' 'rapw_90cv'};
+sslist90 = {'kpsup_90cv' 'kpmnsq_90cv' 'ny_90cv' 'rny_90cv' 'qlr_90cv' 'rqlr_90cv' 'mw_90cv' 'rmw_90cv' 'apw_90cv' 'rapw_90cv'};
+sslist95 = {'kpsup_95cv' 'kpmnsq_95cv' 'ny_95cv' 'rny_95cv' 'qlr_95cv' 'rqlr_95cv' 'mw_95cv' 'rmw_95cv' 'apw_95cv' 'rapw_95cv'};
+sslist99 = {'kpsup_99cv' 'kpmnsq_99cv' 'ny_99cv' 'rny_99cv' 'qlr_99cv' 'rqlr_99cv' 'mw_99cv' 'rmw_99cv' 'apw_99cv' 'rapw_99cv'};
+sslist_long = {'PK sup' 'PK msq' 'Nyblom' 'Robust Nyblom' 'QLR' 'Robust QLR' 'MW' 'Robust MW' 'APW' 'Robust APW'};
+
+empty = [];
+for j=1:3*length(vlist)
+    empty = [empty NaN]; %#ok
+end
+
+% arrange results in a structure
+out.kpsup_90cv = kpsup_90cv;
+out.kpmnsq_90cv = kpmnsq_90cv;
+out.ny_90cv = ny_90cv;
+out.rny_90cv = rny_90cv;
+out.qlr_90cv = qlr_90cv;
+out.rqlr_90cv = rqlr_90cv;
+out.mw_90cv = mw_90cv;
+out.rmw_90cv = rmw_90cv;
+out.apw_90cv = apw_90cv;
+out.rapw_90cv = rapw_90cv;
+
+out.kpsup_95cv = kpsup_95cv;
+out.kpmnsq_95cv = kpmnsq_95cv;
+out.ny_95cv = ny_95cv;
+out.rny_95cv = rny_95cv;
+out.qlr_95cv = qlr_95cv;
+out.rqlr_95cv = rqlr_95cv;
+out.mw_95cv = mw_95cv;
+out.rmw_95cv = rmw_95cv;
+out.apw_95cv = apw_95cv;
+out.rapw_95cv = rapw_95cv;
+
+out.kpsup_99cv = kpsup_99cv;
+out.kpmnsq_99cv = kpmnsq_99cv;
+out.ny_99cv = ny_99cv;
+out.rny_99cv = rny_99cv;
+out.qlr_99cv = qlr_99cv;
+out.rqlr_99cv = rqlr_99cv;
+out.mw_99cv = mw_99cv;
+out.rmw_99cv = rmw_99cv;
+out.apw_99cv = apw_99cv;
+out.rapw_99cv = rapw_99cv;
+
+for s=1:length(sslist)
+    
+    vlabel = [vlabel; sslist_long(s); cnames_long]; %#ok
+    btab = [];
+    for k=1:3
+        table = [];
+        for j=1:length(vlist)
+            vtab = [];
+            for n=1:cnum
+                if isfield(out.(sslist{s}).(vlist{j}),cnames{n})
+                    if k==1
+                        vtab = [vtab; out.(sslist90{s}).(vlist{j}).(cnames{n})]; %#ok
+                    elseif k==2
+                        vtab = [vtab; out.(sslist95{s}).(vlist{j}).(cnames{n})]; %#ok
+                    elseif k==3
+                        vtab = [vtab; out.(sslist99{s}).(vlist{j}).(cnames{n})]; %#ok
+                    end
+                else
+                    vtab = [vtab; NaN]; %#ok
+                end
+            end
+            table = [table vtab]; %#ok
+        end
+        btab = [btab table]; %#ok
+    end
+
+    table = [btab; empty; empty];
+    vlabel = [vlabel; ' ']; %#ok
+
+    fulltabcv = [fulltabcv; table]; %#ok
+end
+
+tab = [title num2cell(NaN(1,cols(fulltabcv)))];
+tab = [tab; num2cell(NaN(1,1+cols(fulltabcv)))];
+tab = [tab; hlabel];
+tab = [tab; num2cell(NaN(1,1+cols(fulltabcv)))];
+
+fulltabcv = fulltabcv(1:end-1,:); fulltabcv = [empty; fulltabcv];
+tab = [tab; vlabel num2cell(fulltabcv)];
+
+xlswrite([outdir 'output.xls'],tab,'str_stab_cvals');
+

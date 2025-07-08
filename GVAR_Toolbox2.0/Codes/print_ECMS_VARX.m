@@ -1,0 +1,151 @@
+function print_ECMS_VARX(cnum,cnames,cnames_long,gvnames,endoglist,exoglist,varxlag,Psi,alpha,beta,estcase,outdir)
+
+%**************************************************************************
+% PURPOSE: printing coefficient estimates of VECMX* models
+%--------------------------------------------------------------------------
+% Alessandro Galesi, 2014. CEMFI, Madrid. galesi@cemfi.edu.es
+%**************************************************************************
+
+
+endnum = zeros(1,cnum);
+fornum = zeros(1,cnum);
+for n=1:cnum
+    endnum(n) = length(endoglist.(cnames{n}));
+    fornum(n) = length(exoglist.(cnames{n}));
+end
+
+
+fcells = 100;
+tab = ['VECMX* Estimates of the Individual Models' num2cell(NaN(1,fcells-1))];
+tab = [tab; num2cell(NaN(1,fcells))];
+
+for n=1:cnum
+
+    if (estcase.(cnames{n}) == 4 && not(isempty(alpha.(cnames{n}))) == 1) % there is cointegration
+        detpart = {'Intercept' 'Trend'};
+    elseif (estcase.(cnames{n}) == 4 && not(isempty(alpha.(cnames{n}))) == 0) % no cointegration, so no trend estimate
+        detpart = {'Intercept'};
+    elseif estcase.(cnames{n}) == 3 
+        detpart = {'Intercept'};
+    elseif (estcase.(cnames{n}) == 2 && not(isempty(alpha.(cnames{n}))) == 1) % there is cointegration
+        detpart = {'Intercept'};
+    elseif (estcase.(cnames{n}) == 2 && not(isempty(alpha.(cnames{n}))) == 0) % no cointegration, so no intercept estimate
+        detpart = {};     
+    end
+
+    % endogenous part of coint vec
+    cointlab = [];
+    for i=1:endnum(n)
+        coint_tmp = sprintf('%s_1',endoglist.(cnames{n}){i});
+        coint1st = {coint_tmp};
+        cointlab = [cointlab coint1st]; %#ok
+    end
+
+    % differences of endogenous
+    dendlab = [];
+    if varxlag.(cnames{n})(1) == 1
+    else
+        for j=2:varxlag.(cnames{n})(1)
+            jj = j-1;
+            for i=1:endnum(n)
+                dend_tmp = sprintf('d%s_%d',endoglist.(cnames{n}){i},jj);
+                dend = {dend_tmp};
+                dendlab = [dendlab dend]; %#ok
+            end
+        end
+    end
+
+
+    % w-exogenous part of coint vec
+    for i=1:fornum(n)
+        flag = 0;
+        if not(isempty(gvnames))
+            for g=1:length(gvnames)
+                if strcmp(exoglist.(cnames{n}){i},gvnames{g})
+                    flag =1;
+                end
+            end
+        end
+        if flag == 0
+        coint_tmp = sprintf('%ss_1',exoglist.(cnames{n}){i});
+        else
+        coint_tmp = sprintf('%s_1',exoglist.(cnames{n}){i}); 
+        end
+        coint2nd = {coint_tmp};
+        cointlab = [cointlab coint2nd]; %#ok
+    end
+
+    sizecoint = length(cointlab); %#ok
+
+    % differences of exogenous
+    dforlab = [];
+    for j=1:varxlag.(cnames{n})(2)
+        jj=j-1;
+        for i=1:fornum(n)
+            flag = 0;
+            if not(isempty(gvnames))
+                for g=1:length(gvnames)
+                    if strcmp(exoglist.(cnames{n}){i},gvnames{g})
+                        flag =1;
+                    end
+                end
+            end
+            if flag == 0
+            dfor_tmp = sprintf('d%ss_%d',exoglist.(cnames{n}){i},jj);
+            else
+            dfor_tmp = sprintf('d%s_%d',exoglist.(cnames{n}){i},jj);
+            end
+            dfor = {dfor_tmp};
+            dforlab = [dforlab dfor]; %#ok
+        end
+    end
+
+    % Create the vector of variables labels
+    %***********************************************
+    if not(isempty(alpha.(cnames{n}))) == 1 % there is cointegration
+        hlabel = [cnames_long(n) detpart cointlab dforlab dendlab];
+    elseif not(isempty(alpha.(cnames{n}))) == 0 % no cointegration
+        hlabel = [cnames_long(n) detpart dforlab dendlab];
+    end
+    
+    tab = [tab; hlabel num2cell(NaN(1,fcells-length(hlabel)))]; %#ok
+
+    if estcase.(cnames{n}) == 4 || estcase.(cnames{n}) == 3
+        % the intercepts are included in the first column of Psi
+        
+        if not(isempty(alpha.(cnames{n}))) == 1 % there is cointegration
+            coeffs_out = [Psi.(cnames{n})(:,1) ...
+                alpha.(cnames{n})*beta.(cnames{n})' ...
+                Psi.(cnames{n})(:,2:end)];
+        elseif not(isempty(alpha.(cnames{n}))) == 0 % no cointegration
+            coeffs_out = [Psi.(cnames{n})(:,1) ...
+                Psi.(cnames{n})(:,2:end)];
+        end
+        
+    elseif estcase.(cnames{n}) == 2
+        % the intercepts are included in the first column of alpha*beta'
+        
+        if not(isempty(alpha.(cnames{n}))) == 1 % there is cointegration
+            coeffs_out = [alpha.(cnames{n})*beta.(cnames{n})' ...
+            Psi.(cnames{n})];     
+        elseif not(isempty(alpha.(cnames{n}))) == 0 % no cointegration
+            coeffs_out = Psi.(cnames{n});   
+        end
+        
+    end
+    
+        
+    for j = 1:endnum(n)
+        
+        endname_tmp = sprintf('d%s',endoglist.(cnames{n}){j});
+        endname = {endname_tmp};
+        
+        if not(isempty(coeffs_out))
+            tab = [tab; endname num2cell(coeffs_out(j,:)) num2cell(NaN(1,fcells-1-length(coeffs_out(j,:))))]; %#ok
+        else
+            tab = [tab; endname num2cell(NaN(1,fcells-1))]; %#ok
+        end
+    end
+end
+        
+xlswrite([outdir 'output.xlsx'],tab,'ECMS_VARX');

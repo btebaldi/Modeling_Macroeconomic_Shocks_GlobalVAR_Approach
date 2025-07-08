@@ -1,0 +1,29 @@
+function print_ECMS_resstats(cnum,cnames,cnames_long,endoglist,epsilon,outdir)
+
+%**************************************************************************
+% PURPOSE: printing descriptive statistics of VECMX* residuals
+%--------------------------------------------------------------------------
+% Alessandro Galesi, July 2011
+% Centro de Estudios Monetarios y Financieros, Madrid.
+% alessandro.galesi@cemfi.edu.es
+%**************************************************************************     
+    
+tab = ['Descriptive Statistics of VECMX* Residuals' num2cell(NaN(1,9))];
+tab = [tab; num2cell(NaN(1,10))];
+tab = [tab;{'Stats' 'Mean' 'Median' 'Maximum' 'Minimum' 'Std. dev.' 'Skewness' 'Kurtosis' 'Jarque-Bera' 'Probability'}];
+
+for n=1:cnum
+tab = [tab; cnames_long(n) num2cell(NaN(1,9))]; %#ok
+    for j=1:length(endoglist.(cnames{n}))
+        vlab = endoglist.(cnames{n})(j); 
+        disp(n); 
+        res_t = epsilon.(cnames{n})(j,:);
+        res = res_t';
+        [mn md mx minv st sk ku] = dstats(res);
+        [W chi2_pval] = jarquebera(res);
+        
+        tab = [tab; vlab num2cell([mn md mx minv st sk ku W chi2_pval])];  %#ok
+    end
+end
+
+xlswrite([outdir 'output.xlsx'],tab,'ECMS_resstats');    

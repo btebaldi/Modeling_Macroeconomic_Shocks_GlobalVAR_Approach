@@ -1,0 +1,66 @@
+function print_orderwereg_sc(cnum,cnames,cnames_long,aic_sbc_we,F_serialcorr_we,vnames,gvnames,vnum,gvnum,fvflag,gvflag,outdir)
+
+%**************************************************************************
+% PURPOSE: prints choice criteria for selecting the order of the weak exogeneity
+% regressions, and corresponding residual serial correlation F-Statistics
+%--------------------------------------------------------------------------
+% Alessandro Galesi, August 2012
+% Centro de Estudios Monetarios y Financieros, Madrid.
+% alessandro.galesi@cemfi.edu.es
+%**************************************************************************     
+  
+
+    
+tab = ['Choice Criteria for Selecting the Order of the Weak Exogeneity Regressions Together With Corresponding Residual Serial Correlation F-Statistics' num2cell(NaN(1,8+vnum+gvnum))];
+tab = [tab; num2cell(NaN(1,9+vnum+gvnum))];
+fvnames = [];
+for i=1:vnum
+    fvname_tmp = sprintf('%ss',vnames{i});
+    fvname = {fvname_tmp};
+    fvnames = [fvnames  fvname]; %#ok
+end
+
+tab = [tab; {' ' 'p*' 'q*' 'AIC' 'SBC' 'logLik' ' ' ' ' 'Fcrit_0.05'} fvnames gvnames];
+
+
+for n=1:cnum
+    for j=1:rows(aic_sbc_we.(cnames{n}))
+        clab = cnames_long(n); 
+        out_tmp = aic_sbc_we.(cnames{n})(j,:);
+        out1 = [out_tmp(4:5) out_tmp(2:3) out_tmp(1)]; % reorder results, only esthetical purpose
+        
+        flab_tmp = sprintf('F(%d,%d)', F_serialcorr_we.(cnames{n})(j,1), F_serialcorr_we.(cnames{n})(j,2));
+        flab = {flab_tmp};
+        vec = flab; %#ok
+        
+        critfigs = F_serialcorr_we.(cnames{n})(j,3);
+        dvfigs = zeros(1,vnum+gvnum);
+        k=1;
+        for i=1:vnum
+            if fvflag(n,i) == 1
+                dvfigs(i) = F_serialcorr_we.(cnames{n})(j,k+3);
+                k=k+1;
+            else
+                dvfigs(i) = NaN;
+            end
+        end
+        
+        if not(gvnum == 0)
+            for i=1:gvnum
+                if gvflag(n,i) == 1
+                    dvfigs(length(vnames)+i) = F_serialcorr_we.(cnames{n})(j,k+3);
+                    k=k+1;
+                else
+                    dvfigs(length(vnames)+i) = NaN;
+                end
+            end
+        end
+        out2 = [critfigs dvfigs];
+        
+        tab = [tab; clab num2cell(out1) ' ' flab num2cell(out2)]; %#ok
+    end
+end
+
+xlswrite([outdir 'output.xlsx'],tab,'order_WEreg_sc');
+
+

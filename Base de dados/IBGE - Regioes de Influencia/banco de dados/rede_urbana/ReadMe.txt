@@ -1,0 +1,1 @@
+Arquivos foram compactados para que fosse possível sincronizar com GitHub
