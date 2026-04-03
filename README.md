@@ -1,14 +1,43 @@
 
-# Modeling How Macroeconomic Shocks Affect Regional Employment: Analyzing the Brazilian Formal Labor Market using the Global VAR Approach
+# Modeling how macroeconomic Shocks Affect Regional Employment: Analyzing the Brazilian Formal Labor Market Using the Global VAR Approach
 GitHub repository: Modeling_Macroeconomic_Shocks_GlobalVAR_Approach
 
-## 📘 Repositório de Reprodução - Artigo "Modeling How Macroeconomic Shocks Affect Regional Employment"
+## 📘 Repositório de Reprodução - Artigo "Modeling how macroeconomic Shocks Affect Regional Employment: Analyzing the Brazilian Formal Labor Market Using the Global VAR Approach"
 
-Este repositório contém os materiais necessários para reprodução e extensão dos resultados apresentados no artigo aceito para publicação na revista *Estudos Econômicos* ([https://revistas.usp.br/ee](https://revistas.usp.br/ee)):
+Este repositório contém os materiais necessários para reprodução e extensão dos resultados apresentados no artigo publicado na revista *Estudos Econômicos* ([https://revistas.usp.br/ee](https://revistas.usp.br/ee)):
 
-**Título:** *Modeling How Macroeconomic Shocks Affect Regional Employment: Analyzing the Brazilian Formal Labor Market using the Global VAR Approach*
-**Autores:** \[Redacted]
-**Data:** Julho de 2025
+**Título:** *Modelando como os choques macroeconômicos afetam o emprego regional: analisando o mercado de trabalho formal brasileiro usando a abordagem GVAR*  
+**Title:** *Modeling how macroeconomic Shocks Affect Regional Employment: Analyzing the Brazilian Formal Labor Market Using the Global VAR Approach*  
+**Data Publicação:** 25-03-2026  
+**DOI:** https://doi.org/10.1590/1980-53575615bep  
+**Link:** [revistas.usp.br/ee/pt_BR/article/view/227096](https://revistas.usp.br/ee/pt_BR/article/view/227096)
+
+**Autores:**
+- Bruno Tebaldi Q. Barbosa  
+Professor na Escola de Economia de São Paulo - FGV;  
+orcid: [0000-0001-9638-5651](https://orcid.org/0000-0001-9638-5651)
+
+- Emerson Fernandes Marçal  
+Professor na Escola de Economia de São Paulo - FGV;  
+orcid: [0000-0002-0841-5644](https://orcid.org/0000-0002-0841-5644)
+
+- Pedro L. Valls Pereira  
+Professor na Escola de Administração de Empresas de São Paulo - FGV;  
+orcid: [0000-0002-3709-9564](https://orcid.org/0000-0002-3709-9564)
+
+### Citação
+
+Para citar este repositório, arquivos ou materiais associados, utilize o formato apresentado abaixo, adaptando conforme necessário para o contexto do seu trabalho. 
+
+Barbosa, B. T. (2025). *Repositorio do artigo Modeling how macroeconomic Shocks Affect Regional Employment: Analyzing the Brazilian Formal Labor Market Using the Global VAR Approach*. https://github.com/btebaldi/Modeling_Macroeconomic_Shocks_GlobalVAR_Approach/.
+
+> @misc{barbosa2025RepositoryModeling_Macroeconomic_Shocks_GlobalVAR_Approach,  
+author       = {Barbosa, Bruno Tebaldi},  
+title        = {Repositório do Artigo {Modeling how macroeconomic Shocks Affect Regional Employment: Analyzing the Brazilian Formal Labor Market Using the Global VAR Approach}},  
+year         = {2026},  
+howpublished = {\url{https://github.com/btebaldi/Modeling_Macroeconomic_Shocks_GlobalVAR_Approach}}  
+}
+
 
 ### 🧩 Conteúdo do Repositório
 
