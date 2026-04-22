@@ -116,11 +116,11 @@ orcid: [0000-0002-3709-9564](https://orcid.org/0000-0002-3709-9564)
 
 Para citar este repositório, arquivos ou materiais associados, utilize o formato apresentado abaixo, adaptando conforme necessário para o contexto do seu trabalho. 
 
-Barbosa, B. T. (2025). *Repositorio do artigo Modeling how macroeconomic Shocks Affect Regional Employment: Analyzing the Brazilian Formal Labor Market Using the Global VAR Approach*. https://github.com/btebaldi/Modeling_Macroeconomic_Shocks_GlobalVAR_Approach/.
+Barbosa, B. T. (2025). *Replication Repository - Article Modeling how macroeconomic Shocks Affect Regional Employment: Analyzing the Brazilian Formal Labor Market Using the Global VAR Approach*. https://github.com/btebaldi/Modeling_Macroeconomic_Shocks_GlobalVAR_Approach/.
 
 > @misc{barbosa2025RepositoryModeling_Macroeconomic_Shocks_GlobalVAR_Approach,  
 author       = {Barbosa, Bruno Tebaldi},  
-title        = {Repositório do Artigo {Modeling how macroeconomic Shocks Affect Regional Employment: Analyzing the Brazilian Formal Labor Market Using the Global VAR Approach}},  
+title        = {Replication Repository - Article {Modeling how macroeconomic Shocks Affect Regional Employment: Analyzing the Brazilian Formal Labor Market Using the Global VAR Approach}},  
 year         = {2026},  
 howpublished = {\url{https://github.com/btebaldi/Modeling_Macroeconomic_Shocks_GlobalVAR_Approach}}  
 }
